@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internship Tracker</title>
+<style>
+:root{
+  --bg:#eef1f6; --surface:#fff; --ink:#16202f; --muted:#5d6b80; --line:#dbe1ea; --brand:#1f3a68; --brand-2:#2c52932b;
+  --blue:#2563eb; --blue-bg:#dbeafe; --indigo:#6d28d9; --indigo-bg:#ede9fe; --amber:#b45309; --amber-bg:#fef3c7;
+  --green:#047857; --green-bg:#d1fae5; --rose:#be123c; --rose-bg:#ffe4e6; --ring:#1f3a68;
+  --shadow:0 1px 2px rgba(22,32,47,.06),0 6px 18px rgba(22,32,47,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Inter","Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+h1,h2{margin:0;letter-spacing:-.02em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+header h1{font-size:1.75rem;font-weight:800}
+header p{margin:2px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:var(--shadow)}
+.btn:hover{border-color:#b8c2d3}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.danger{color:var(--rose)}
+.btn.small{padding:5px 10px;font-size:.85rem;box-shadow:none}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.banner{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--amber-bg);border:1px solid #f5d27a;color:#78350f;padding:10px 14px;border-radius:12px;cursor:pointer;margin-bottom:16px;font-weight:600}
+.banner[hidden]{display:none}
+.banner span.go{margin-left:auto;text-decoration:underline}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;cursor:pointer;box-shadow:var(--shadow);border-top:4px solid var(--c,var(--brand))}
+.card .n{display:block;font-size:1.9rem;font-weight:800;line-height:1.1;color:var(--c,var(--ink))}
+.card .l{color:var(--muted);font-weight:600;font-size:.85rem}
+.card[aria-pressed="true"]{box-shadow:0 0 0 3px var(--c,var(--brand)),var(--shadow)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+.panel h2{font-size:1.05rem;margin-bottom:12px}
+form .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.field label{display:block;font-weight:600;font-size:.85rem;margin-bottom:4px}
+.field input,.field select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.field input[aria-invalid="true"]{border-color:var(--rose)}
+.err{color:var(--rose);font-size:.8rem;min-height:1em;margin-top:2px}
+.field.wide{grid-column:span 2}
+.form-actions{display:flex;gap:8px;margin-top:12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar .search{flex:1 1 220px;position:relative}
+.toolbar .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.toolbar input[type=search]{width:100%;padding:9px 10px 9px 32px;border:1px solid var(--line);border-radius:8px}
+.toolbar select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.count{color:var(--muted);font-size:.85rem;margin-left:auto}
+.row{display:grid;grid-template-columns:2fr 1.2fr 1.1fr auto;gap:10px 14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row.flag{background:linear-gradient(90deg,var(--amber-bg),transparent 40%);margin:0 -16px;padding-left:16px;padding-right:16px}
+.row .co{font-weight:700}
+.row .ro,.row .meta,.row .na{color:var(--muted);font-size:.9rem}
+.row .na b{color:var(--ink);font-weight:600}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:.78rem;font-weight:700}
+.badge.warn{background:var(--amber-bg);color:var(--amber)}
+.badge.over{background:var(--rose-bg);color:var(--rose)}
+.badge.miss{background:var(--indigo-bg);color:var(--indigo)}
+.badge svg.i{width:12px;height:12px}
+.status{appearance:none;border:1px solid transparent;border-radius:999px;padding:6px 28px 6px 12px;font-weight:700;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='3'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center}
+.s-Applied{background-color:var(--blue-bg);color:var(--blue)}
+.s-Test{background-color:var(--indigo-bg);color:var(--indigo)}
+.s-Interview{background-color:var(--amber-bg);color:var(--amber)}
+.s-Offer{background-color:var(--green-bg);color:var(--green)}
+.s-Rejected{background-color:var(--rose-bg);color:var(--rose)}
+.row-actions{display:flex;gap:6px}
+.empty{text-align:center;padding:36px 12px;color:var(--muted)}
+.empty h3{margin:8px 0 4px;color:var(--ink)}
+.empty svg.i{width:36px;height:36px;color:#9aa7bb}
+#toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:50}
+.toast{background:var(--ink);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);max-width:320px;animation:in .2s ease-out;border-left:4px solid var(--green-bg)}
+.toast.error{border-left-color:var(--rose)}
+.toast.out{opacity:0;transform:translateY(6px);transition:.25s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+dialog{border:0;border-radius:14px;padding:20px;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(22,32,47,.45)}
+dialog p{margin:0 0 16px}
+dialog .form-actions{justify-content:flex-end;margin:0}
+footer.privacy{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;color:var(--muted);font-size:.9rem}
+footer.privacy h2{font-size:1rem;color:var(--ink);margin-bottom:6px}
+footer.privacy ul{margin:0;padding-left:18px}
+footer.privacy code{background:#eef1f6;padding:1px 5px;border-radius:4px;color:var(--ink)}
+@media(max-width:860px){.cards{grid-template-columns:repeat(3,1fr)}form .grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr 1fr}.row-actions{justify-content:flex-start}}
+@media(max-width:520px){.cards{grid-template-columns:repeat(2,1fr)}form .grid{grid-template-columns:1fr}.field.wide{grid-column:auto}.row{grid-template-columns:1fr}.row.flag{margin:0 -16px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Internship Tracker</h1>
+      <p>Know what's due, what's next, and where every application stands.</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="exportBtn" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>Export CSV</button>
+      <button class="btn danger" id="resetBtn" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>Reset Sample Data</button>
+    </div>
+  </header>
+
+  <button class="banner" id="banner" type="button" hidden>
+    <svg class="i" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    <span id="bannerText"></span><span class="go">Show them</span>
+  </button>
+
+  <section class="cards" id="cards" aria-label="Filter by status"></section>
+
+  <section class="panel">
+    <h2 id="formTitle">Add application</h2>
+    <form id="form" novalidate>
+      <div class="grid">
+        <div class="field"><label for="company">Company</label><input id="company" name="company" maxlength="100" required><div class="err" data-err="company"></div></div>
+        <div class="field"><label for="role">Role</label><input id="role" name="role" maxlength="100" required><div class="err" data-err="role"></div></div>
+        <div class="field"><label for="status">Status</label>
+          <select id="status" name="status"><option>Applied</option><option>Test</option><option>Interview</option><option>Offer</option><option>Rejected</option></select><div class="err" data-err="status"></div></div>
+        <div class="field"><label for="applicationDate">Application date</label><input id="applicationDate" name="applicationDate" type="date" required><div class="err" data-err="applicationDate"></div></div>
+        <div class="field"><label for="deadline">Deadline</label><input id="deadline" name="deadline" type="date" required><div class="err" data-err="deadline"></div></div>
+        <div class="field wide"><label for="nextAction">Next action (optional)</label><input id="nextAction" name="nextAction" maxlength="200" placeholder="e.g. Send thank-you email"><div class="err" data-err="nextAction"></div></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn primary" id="saveBtn" type="submit"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add application</span></button>
+        <button class="btn" id="cancelBtn" type="button" hidden>Cancel edit</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" id="search" placeholder="Search company or role" aria-label="Search by company or role"></div>
+      <label for="sort" class="sr" style="font-weight:600">Sort by</label>
+      <select id="sort"><option value="deadline">Deadline</option><option value="applicationDate">Application Date</option><option value="company">Company</option></select>
+      <button class="btn" id="needsBtn" type="button" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Needs action</button>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <footer class="privacy" id="privacy">
+    <h2>Data &amp; Privacy Note</h2>
+    <ul>
+      <li>Stored fields: <code>id</code>, <code>company</code>, <code>role</code>, <code>applicationDate</code>, <code>deadline</code>, <code>status</code>, <code>nextAction</code>.</li>
+      <li>Data is saved in local server JSON storage (<code>data/applications.json</code>). There is no external cloud database.</li>
+      <li>The preloaded records are fictional demo data.</li>
+      <li>This app does not send any data to any third-party or external server.</li>
+      <li>No real secrets, API keys, or personal information are included or stored.</li>
+    </ul>
+  </footer>
+</div>
+
+<div id="toasts" aria-live="polite" role="status"></div>
+<dialog id="dlg"><p id="dlgMsg"></p><div class="form-actions"><button class="btn" id="dlgNo" type="button">Cancel</button><button class="btn danger" id="dlgYes" type="button">Confirm</button></div></dialog>
+
+<script>
+(() => {
+  'use strict';
+  const STATUSES = ['Applied', 'Test', 'Interview', 'Offer', 'Rejected'];
+  const ACTIVE = ['Applied', 'Test', 'Interview'];
+  const COLORS = { Total: '#1f3a68', Applied: '#2563eb', Test: '#6d28d9', Interview: '#b45309', Offer: '#047857', Rejected: '#be123c' };
+  const $ = (id) => document.getElementById(id);
+  const state = { apps: [], status: 'Total', q: '', sort: 'deadline', needsOnly: false, editingId: null };
+
+  // ---------- Helpers ----------
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  const toLocal = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const daysLeft = (s) => { const t = toLocal(todayStr()); return Math.round((toLocal(s) - t) / 86400000); };
+  const fmt = (s) => toLocal(s).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const isActive = (a) => ACTIVE.includes(a.status);
+  const missing = (a) => isActive(a) && !a.nextAction.trim();
+  const deadlineFlag = (a) => { if (!isActive(a)) return null; const d = daysLeft(a.deadline); return d < 0 ? 'over' : d <= 3 ? 'warn' : null; };
+  const needsAttention = (a) => isActive(a) && (deadlineFlag(a) !== null || missing(a));
+  const icon = (p) => `<svg class="i" viewBox="0 0 24 24">${p}</svg>`;
+
+  async function api(path, opts) {
+    const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { const e = new Error(data.error || 'Request failed'); e.fields = data.errors; throw e; }
+    return data;
+  }
+
+  function toast(msg, type) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (type === 'error' ? ' error' : '');
+    t.textContent = msg;
+    $('toasts').appendChild(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3000);
+  }
+
+  function confirmDialog(msg, yesLabel) {
+    return new Promise((resolve) => {
+      const dlg = $('dlg');
+      $('dlgMsg').textContent = msg;
+      $('dlgYes').textContent = yesLabel;
+      const done = (v) => { dlg.close(); $('dlgYes').onclick = $('dlgNo').onclick = null; resolve(v); };
+      $('dlgYes').onclick = () => done(true);
+      $('dlgNo').onclick = () => done(false);
+      dlg.oncancel = () => resolve(false);
+      dlg.showModal();
+    });
+  }
+
+  // ---------- Derived data ----------
+  function visible() {
+    const q = state.q.trim().toLowerCase();
+    const list = state.apps.filter((a) =>
+      (state.status === 'Total' || a.status === state.status) &&
+      (!state.needsOnly || needsAttention(a)) &&
+      (!q || a.company.toLowerCase().includes(q) || a.role.toLowerCase().includes(q)));
+    const s = state.sort;
+    list.sort((a, b) => s === 'company' ? a.company.localeCompare(b.company)
+      : s === 'applicationDate' ? b.applicationDate.localeCompare(a.applicationDate)
+      : a.deadline.localeCompare(b.deadline));
+    return list;
+  }
+
+  // ---------- Render ----------
+  function renderCards() {
+    const counts = { Total: state.apps.length };
+    STATUSES.forEach((s) => counts[s] = state.apps.filter((a) => a.status === s).length);
+    $('cards').innerHTML = ['Total', ...STATUSES].map((k) =>
+      `<button type="button" class="card" data-status="${k}" style="--c:${COLORS[k]}" aria-pressed="${state.status === k}">
+        <span class="n">${counts[k]}</span><span class="l">${k}</span></button>`).join('');
+  }
+
+  function renderBanner() {
+    const n = state.apps.filter(needsAttention).length;
+    $('banner').hidden = n === 0 || state.needsOnly;
+    $('bannerText').textContent = `${n} application${n === 1 ? '' : 's'} need${n === 1 ? 's' : ''} attention`;
+  }
+
+  function badgesFor(a) {
+    const out = [];
+    const f = deadlineFlag(a);
+    if (f === 'over') out.push(`<span class="badge over">${icon('<circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/>')}Overdue</span>`);
+    if (f === 'warn') {
+      const d = daysLeft(a.deadline);
+      out.push(`<span class="badge warn">${icon('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}${d === 0 ? 'Due today' : d + (d === 1 ? ' day left' : ' days left')}</span>`);
+    }
+    if (missing(a)) out.push(`<span class="badge miss">${icon('<path d="M12 5v14M5 12h14"/>')}Missing next action</span>`);
+    return out.join('');
+  }
+
+  function renderList() {
+    const list = visible();
+    $('count').textContent = `${list.length} of ${state.apps.length} shown`;
+    if (!state.apps.length) {
+      $('list').innerHTML = `<div class="empty">${icon('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>')}<h3>No applications yet</h3><p>Add your first one above, or restore the demo records.</p><button class="btn" type="button" data-act="reset">Reset Sample Data</button></div>`;
+      return;
+    }
+    if (!list.length) {
+      $('list').innerHTML = `<div class="empty">${icon('<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>')}<h3>No matches</h3><p>Nothing fits the current search or filters.</p><button class="btn" type="button" data-act="clear">Clear filters</button></div>`;
+      return;
+    }
+    $('list').innerHTML = list.map((a) => `
+      <div class="row${needsAttention(a) ? ' flag' : ''}" data-id="${esc(a.id)}">
+        <div><div class="co">${esc(a.company)}</div><div class="ro">${esc(a.role)}</div><div class="badges">${badgesFor(a)}</div></div>
+        <div class="meta">Applied ${fmt(a.applicationDate)}<br>Deadline ${fmt(a.deadline)}</div>
+        <div><select class="status s-${a.status}" aria-label="Status for ${esc(a.company)}">${STATUSES.map((s) => `<option${s === a.status ? ' selected' : ''}>${s}</option>`).join('')}</select>
+          <div class="na"><b>Next:</b> ${a.nextAction ? esc(a.nextAction) : '—'}</div></div>
+        <div class="row-actions">
+          <button class="btn small" type="button" data-act="edit" aria-label="Edit ${esc(a.company)}">${icon('<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')}Edit</button>
+          <button class="btn small danger" type="button" data-act="delete" aria-label="Delete ${esc(a.company)}">${icon('<path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/>')}Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function render() {
+    renderCards(); renderBanner(); renderList();
+    $('needsBtn').setAttribute('aria-pressed', state.needsOnly);
+  }
+
+  // ---------- Data ----------
+  async function load() {
+    try { state.apps = await api('/api/applications'); render(); }
+    catch (e) { toast('Could not load applications: ' + e.message, 'error'); }
+  }
+
+  // ---------- Form ----------
+  const fields = ['company', 'role', 'status', 'applicationDate', 'deadline', 'nextAction'];
+  function showErrors(errs) {
+    document.querySelectorAll('[data-err]').forEach((el) => { el.textContent = errs[el.dataset.err] || ''; });
+    fields.forEach((f) => $(f).setAttribute('aria-invalid', errs[f] ? 'true' : 'false'));
+  }
+  function localValidate(v) {
+    const e = {};
+    if (!v.company) e.company = 'Company is required.';
+    if (!v.role) e.role = 'Role is required.';
+    if (!v.applicationDate) e.applicationDate = 'Enter an application date.';
+    if (!v.deadline) e.deadline = 'Enter a deadline.';
+    else if (v.applicationDate && v.deadline < v.applicationDate) e.deadline = 'Deadline cannot be before the application date.';
+    return e;
+  }
+  function resetForm() {
+    state.editingId = null;
+    $('form').reset();
+    $('applicationDate').value = todayStr();
+    $('formTitle').textContent = 'Add application';
+    $('saveBtn').querySelector('span').textContent = 'Add application';
+    $('cancelBtn').hidden = true;
+    showErrors({});
+  }
+  function startEdit(a) {
+    state.editingId = a.id;
+    fields.forEach((f) => $(f).value = a[f]);
+    $('formTitle').textContent = 'Edit application';
+    $('saveBtn').querySelector('span').textContent = 'Save changes';
+    $('cancelBtn').hidden = false;
+    showErrors({});
+    $('company').focus();
+    $('form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  $('form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const v = {}; fields.forEach((f) => v[f] = $(f).value.trim());
+    const errs = localValidate(v);
+    showErrors(errs);
+    if (Object.keys(errs).length) return;
+    try {
+      if (state.editingId) {
+        const saved = await api('/api/applications/' + state.editingId, { method: 'PUT', body: JSON.stringify(v) });
+        state.apps = state.apps.map((a) => a.id === saved.id ? saved : a);
+        toast(`Updated ${saved.company}`);
+      } else {
+        const saved = await api('/api/applications', { method: 'POST', body: JSON.stringify(v) });
+        state.apps.push(saved);
+        toast(`Added ${saved.company}`);
+      }
+      resetForm(); render();
+    } catch (e) { showErrors(e.fields || {}); toast(e.message, 'error'); }
+  });
+  $('cancelBtn').addEventListener('click', resetForm);
+
+  // ---------- Interactions ----------
+  $('cards').addEventListener('click', (e) => {
+    const c = e.target.closest('.card'); if (!c) return;
+    state.status = c.dataset.status; render();
+  });
+  $('search').addEventListener('input', (e) => { state.q = e.target.value; renderList(); });
+  $('sort').addEventListener('change', (e) => { state.sort = e.target.value; renderList(); });
+  $('needsBtn').addEventListener('click', () => { state.needsOnly = !state.needsOnly; render(); });
+  $('banner').addEventListener('click', () => { state.needsOnly = true; render(); $('list').scrollIntoView({ behavior: 'smooth' }); });
+
+  async function doReset() {
+    if (!(await confirmDialog('Replace all current records with the sample data?', 'Reset'))) return;
+    try {
+      state.apps = await api('/api/reset', { method: 'POST' });
+      state.status = 'Total'; state.q = ''; state.needsOnly = false; $('search').value = '';
+      resetForm(); render(); toast('Sample data restored');
+    } catch (e) { toast(e.message, 'error'); }
+  }
+  $('resetBtn').addEventListener('click', doReset);
+
+  $('list').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const act = btn.dataset.act;
+    if (act === 'reset') return doReset();
+    if (act === 'clear') { state.status = 'Total'; state.q = ''; state.needsOnly = false; $('search').value = ''; return render(); }
+    const row = btn.closest('.row'); const a = state.apps.find((x) => x.id === row.dataset.id); if (!a) return;
+    if (act === 'edit') return startEdit(a);
+    if (act === 'delete') {
+      if (!(await confirmDialog(`Delete ${a.company} – ${a.role}?`, 'Delete'))) return;
+      try {
+        await api('/api/applications/' + a.id, { method: 'DELETE' });
+        state.apps = state.apps.filter((x) => x.id !== a.id);
+        if (state.editingId === a.id) resetForm();
+        render(); toast(`Deleted ${a.company}`);
+      } catch (err) { toast(err.message, 'error'); }
+    }
+  });
+
+  $('list').addEventListener('change', async (e) => {
+    if (!e.target.classList.contains('status')) return;
+    const row = e.target.closest('.row'); const a = state.apps.find((x) => x.id === row.dataset.id); if (!a) return;
+    const next = e.target.value;
+    try {
+      const { id, ...rest } = a;
+      const saved = await api('/api/applications/' + id, { method: 'PUT', body: JSON.stringify({ ...rest, status: next }) });
+      state.apps = state.apps.map((x) => x.id === id ? saved : x);
+      render(); toast(`${saved.company} moved to ${next}`);
+    } catch (err) { toast(err.message, 'error'); render(); }
+  });
+
+  // ---------- CSV export ----------
+  function csvCell(v) {
+    let s = String(v ?? '');
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; // prevent spreadsheet formula injection
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  $('exportBtn').addEventListener('click', () => {
+    const list = visible();
+    if (!list.length) return toast('Nothing to export with the current filters', 'error');
+    const header = ['Company', 'Role', 'Application Date', 'Deadline', 'Status', 'Next Action'];
+    const rows = list.map((a) => [a.company, a.role, a.applicationDate, a.deadline, a.status, a.nextAction].map(csvCell).join(','));
+    const blob = new Blob(['\uFEFF' + [header.join(','), ...rows].join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `internship-applications-${todayStr()}.csv`;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast(`Exported ${list.length} application${list.length === 1 ? '' : 's'}`);
+  });
+
+  resetForm();
+  load();
+})();
+</script>
+</body>
+</html>

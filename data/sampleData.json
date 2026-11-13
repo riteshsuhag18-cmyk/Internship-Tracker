@@ -1,0 +1,10 @@
+[
+  { "company": "Northwind Labs", "role": "Software Engineering Intern", "applicationDaysAgo": 6, "deadlineInDays": 2, "status": "Applied", "nextAction": "Polish resume and submit portfolio link" },
+  { "company": "Brightpath Analytics", "role": "Data Analyst Intern", "applicationDaysAgo": 12, "deadlineInDays": 1, "status": "Test", "nextAction": "Finish online SQL assessment" },
+  { "company": "Lumen Health", "role": "Product Design Intern", "applicationDaysAgo": 20, "deadlineInDays": 9, "status": "Interview", "nextAction": "Prepare case study walkthrough" },
+  { "company": "Cobalt Robotics", "role": "Backend Intern", "applicationDaysAgo": 15, "deadlineInDays": 14, "status": "Applied", "nextAction": "" },
+  { "company": "Harbor Finance", "role": "Quantitative Research Intern", "applicationDaysAgo": 30, "deadlineInDays": -3, "status": "Test", "nextAction": "Email recruiter about missed test window" },
+  { "company": "Evergreen Cloud", "role": "DevOps Intern", "applicationDaysAgo": 35, "deadlineInDays": -10, "status": "Offer", "nextAction": "Reply to offer before Friday" },
+  { "company": "Pixelforge Studios", "role": "Frontend Intern", "applicationDaysAgo": 40, "deadlineInDays": -20, "status": "Rejected", "nextAction": "Request feedback and reapply next cycle" },
+  { "company": "Solstice Energy", "role": "Machine Learning Intern", "applicationDaysAgo": 4, "deadlineInDays": 3, "status": "Interview", "nextAction": "Schedule technical interview" }
+]
